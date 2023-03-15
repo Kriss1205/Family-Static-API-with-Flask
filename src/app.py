@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify, url_for
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from datastructures import FamilyStructure
-# from models import Person
+#from models import Person
 
 app = Flask(__name__)
 app.url_map.strict_slashes = False
@@ -16,19 +16,14 @@ CORS(app)
 jackson_family = FamilyStructure("Jackson")
 
 # Handle/serialize errors like a JSON object
-
-
 @app.errorhandler(APIException)
 def handle_invalid_usage(error):
     return jsonify(error.to_dict()), error.status_code
 
 # generate sitemap with all your endpoints
-
-
 @app.route('/')
 def sitemap():
     return generate_sitemap(app)
-
 
 @app.route('/members', methods=['GET'])
 def handle_hello():
@@ -43,11 +38,10 @@ def handle_hello():
         return "Error, no family members found", 400
     return jsonify(response_body), 200
 
-
 @app.route('/members/<int:id>', methods=['GET'])
 def get_specific_family_member(id):
-    member = jackson_family.get_member(id)
-
+    member= jackson_family.get_member(id)
+    
     if member:
         return jsonify(member), 200
     else:
@@ -56,22 +50,24 @@ def get_specific_family_member(id):
             'message': 'User not found'
         }), 400
 
-
 @app.route('/members/<int:id>', methods=['DELETE'])
-def get_specific_family_member(id):
-    member = jackson_family.get_member(id)
-
+def delete_specific_family_member(id):
+    member= jackson_family.get_member(id)
+    
     if member:
+        #return jsonify(member), 200 same as GET 
         jackson_family.delete_member(id)
         return jsonify({
-            'status': 'success',
-            'message': 'Family member successfully deleted :)'
+            'status': 'successful',
+            'message': 'Family member successfully deleted'
         }), 200
+        
     else:
         return jsonify({
             'status': 'failed',
             'message': 'User not found'
         }), 400
+        
 
 
 # this only runs if `$ python src/app.py` is executed
